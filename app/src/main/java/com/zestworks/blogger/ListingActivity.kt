@@ -24,15 +24,11 @@ class ListingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.listing_activity)
 
-        Log.e("intent","here    $intent")
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                     .replace(R.id.container, ListingFragment.newInstance())
                     .commitNow()
         }
-
-        //createAuthorizationService()
-
     }
 
     override fun onStart() {

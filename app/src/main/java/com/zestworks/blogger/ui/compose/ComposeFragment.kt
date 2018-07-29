@@ -12,6 +12,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.google.api.client.auth.oauth.OAuthCredentialsResponse
@@ -29,6 +30,7 @@ import com.google.api.services.oauth2.Oauth2
 import com.google.api.services.oauth2.Oauth2RequestInitializer
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
+import com.zestworks.blogger.model.Blog
 import com.zestworks.blogger.ui.listing.BloggerViewModel
 import kotlinx.android.synthetic.main.compose_fragment.*
 import kotlinx.coroutines.experimental.launch
@@ -42,6 +44,8 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
     private lateinit var viewModel: BloggerViewModel
     private lateinit var authManager: AuthManager
+
+    private val blog = Blog()
 
     companion object {
         fun newInstance() = ComposeFragment()
@@ -57,13 +61,11 @@ class ComposeFragment : Fragment(), ComposerCallback {
         text_editor.composerCallback = this
 
         bold_button.setOnClickListener {
-            /*if (!it.isSelected) {
+            if (!it.isSelected) {
                 text_editor.applyProps(Composer.PROPS.BOLD)
             } else {
                 text_editor.removeProps(Composer.PROPS.BOLD)
-            }*/
-
-            uploadBlogs()
+            }
         }
 
         italic_button.setOnClickListener {
@@ -108,6 +110,13 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
             }
         })*/
+    }
+
+    override fun onStop() {
+        blog.content = HtmlCompat.toHtml(text_editor.text!!, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        viewModel.insertBlog(blog)
+
+        super.onStop()
     }
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
