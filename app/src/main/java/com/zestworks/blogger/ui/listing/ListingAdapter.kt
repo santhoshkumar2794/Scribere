@@ -28,7 +28,8 @@ class ListingAdapter(context: Context, diffUtil: DiffUtil.ItemCallback<Blog>) : 
 
     override fun onBindViewHolder(holder: ListingHolder, position: Int) {
         val blog = getItem(position)
-        holder.itemView.blog_content.text = blog!!.content
+        holder.index = position
+        holder.updateLayoutParams()
     }
 
     private fun obtainHolderWidth(context: Context): Int {
@@ -37,12 +38,27 @@ class ListingAdapter(context: Context, diffUtil: DiffUtil.ItemCallback<Blog>) : 
         return Math.round(dpWidth / 2.5f) //Assuming Number of column is 2 and adding 0.5 as margin
     }
 
-    inner class ListingHolder(view: View) : RecyclerView.ViewHolder(view){
+    inner class ListingHolder(view: View) : RecyclerView.ViewHolder(view) {
+        var index: Int = 0
 
         init {
-            val layoutParams = view.blog_holder.layoutParams
+            updateLayoutParams()
+        }
+
+        internal fun updateLayoutParams() {
+            val dimension = itemView.context.resources.getDimension(R.dimen.listing_title_margin)
+
+            val layoutParams = itemView.blog_holder.layoutParams as RecyclerView.LayoutParams
             layoutParams.width = holderWidth
-            view.blog_holder.layoutParams = layoutParams
+            layoutParams.topMargin = (dimension * 1.5f).toInt()
+            if (index % 2 == 0) {
+                layoutParams.leftMargin = (dimension * 1.5f).toInt()
+                layoutParams.rightMargin = 0
+            } else {
+                layoutParams.leftMargin = (dimension * 1f).toInt()
+                layoutParams.rightMargin = 0
+            }
+            itemView.blog_holder.layoutParams = layoutParams
         }
     }
 }

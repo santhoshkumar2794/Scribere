@@ -1,23 +1,19 @@
 package com.zestworks.blogger.ui.listing
 
-import android.media.MediaPlayer
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.model.Blog
 import com.zestworks.blogger.ui.compose.ComposeFragment
 import kotlinx.android.synthetic.main.listing_fragment.*
-import kotlinx.coroutines.experimental.launch
 
 class ListingFragment : Fragment() {
 
@@ -72,7 +68,6 @@ class ListingFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(BloggerViewModel::class.java)
 
         viewModel.getBlogList().observe(this, Observer {
-            Log.e("blog","count     ${it!!.size}")
             listingAdapter.submitList(it)
         })
     }

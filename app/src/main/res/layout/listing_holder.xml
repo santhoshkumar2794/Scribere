@@ -3,19 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/blog_holder"
     android:layout_width="match_parent"
-    android:layout_height="200dp"
-    android:layout_marginStart="18dp"
-    android:layout_marginTop="16dp">
+    android:layout_height="200dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <TextView
-            android:id="@+id/blog_content"
+        <ImageView
+            android:id="@+id/blog_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:src="@drawable/ic_subject_black_24dp"
             app:layout_constraintBottom_toTopOf="@id/guideline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -32,9 +30,12 @@
             android:id="@+id/blog_title"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
+            android:layout_marginStart="@dimen/listing_title_margin"
+            android:layout_marginEnd="@dimen/listing_title_margin"
             android:text="Title"
+            style="@style/TextAppearance.AppCompat.Medium"
+            android:textColor="#000"
+            android:gravity="center_vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
