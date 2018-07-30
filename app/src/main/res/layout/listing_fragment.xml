@@ -36,6 +36,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="16dp"
                     android:gravity="center"
+                    android:textColor="@color/blue"
                     android:text="@string/app_name" />
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
@@ -58,7 +59,7 @@
             android:id="@+id/create_new"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_black_24dp"
+            android:src="@drawable/ic_mode_edit_black_24dp"
             app:backgroundTint="@color/white"
             app:fabSize="normal"
             app:layout_anchor="@id/listing_app_bar" />
