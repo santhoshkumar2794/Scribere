@@ -9,6 +9,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
+import com.zestworks.blogger.CreateBlogFragment
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.model.Blog
@@ -33,18 +34,19 @@ class ListingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupListing()
         create_new.setOnClickListener {
-            val authManager = AuthManager.getInstance(context!!)
+            /*val authManager = AuthManager.getInstance(context!!)
 
             if (!authManager.getCurrent().isAuthorized) {
                 authManager.createAuthorizationService(context!!)
             } else {
-                openComposeFragment()
-            }
+                openCreateNew()
+            }*/
+            openCreateNew()
         }
     }
 
     private fun setupListing() {
-        listingAdapter = ListingAdapter(context!!,object : DiffUtil.ItemCallback<Blog>() {
+        listingAdapter = ListingAdapter(context!!, object : DiffUtil.ItemCallback<Blog>() {
             override fun areItemsTheSame(oldItem: Blog, newItem: Blog): Boolean {
                 return oldItem.hashCode() == newItem.hashCode()
             }
@@ -54,12 +56,12 @@ class ListingFragment : Fragment() {
             }
         })
         listing_recycler_view.adapter = listingAdapter
-        listing_recycler_view.layoutManager = GridLayoutManager(context!!,2)//LinearLayoutManager(context!!, LinearLayoutManager.VERTICAL, false)
+        listing_recycler_view.layoutManager = GridLayoutManager(context!!, 2)//LinearLayoutManager(context!!, LinearLayoutManager.VERTICAL, false)
     }
 
-    private fun openComposeFragment() {
-        val composeFragment = ComposeFragment.newInstance()
-        activity!!.supportFragmentManager.beginTransaction().replace(R.id.container, composeFragment, "COMPOSE_FRAGMENT").addToBackStack(null).commit()
+    private fun openCreateNew() {
+        val createBlogFragment = CreateBlogFragment.newInstance()
+        activity!!.supportFragmentManager.beginTransaction().replace(R.id.container, createBlogFragment, "CREATE_BLOG_FRAGMENT").addToBackStack(null).commit()
         activity!!.supportFragmentManager.executePendingTransactions()
     }
 
