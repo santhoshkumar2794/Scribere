@@ -71,8 +71,8 @@ class CreateBlogFragment : Fragment(), TemplateSelector {
         val composeFragment = ComposeFragment.newInstance()
 
         val bundle = Bundle()
-        bundle.putString("title", blog_title.text.toString())
-        bundle.putString("template", this.template.toString())
+        bundle.putString(Constants.BLOG_TITLE, blog_title.text.toString())
+        bundle.putString(Constants.BLOG_TEMPLATE, this.template.toString())
         composeFragment.arguments = bundle
 
         activity!!.supportFragmentManager.beginTransaction().replace(R.id.container, composeFragment, "COMPOSE_FRAGMENT").commit()

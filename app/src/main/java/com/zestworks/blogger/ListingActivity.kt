@@ -40,13 +40,13 @@ class ListingActivity : AppCompatActivity() {
         checkIntent(intent)
     }
 
-    private fun checkIntent(intent: Intent?){
-        when(intent!!.action){
+    private fun checkIntent(intent: Intent?) {
+        when (intent!!.action) {
             AuthManager.action -> {
                 if (!intent.hasExtra(USED_INTENT)) {
                     val authManager = AuthManager.getInstance(this)
                     authManager.handleAuthorizationResponse(this, intent)
-                    intent.putExtra(USED_INTENT,true)
+                    intent.putExtra(USED_INTENT, true)
                 }
             }
         }

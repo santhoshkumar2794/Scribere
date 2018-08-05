@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
@@ -28,9 +29,13 @@ import com.google.api.services.blogger.BloggerScopes
 import com.google.api.services.blogger.model.Post
 import com.google.api.services.oauth2.Oauth2
 import com.google.api.services.oauth2.Oauth2RequestInitializer
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.zestworks.blogger.Constants
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.model.Blog
+import com.zestworks.blogger.ui.create_new.Template
 import com.zestworks.blogger.ui.listing.BloggerViewModel
 import kotlinx.android.synthetic.main.compose_fragment.*
 import kotlinx.coroutines.experimental.launch
@@ -44,6 +49,7 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
     private lateinit var viewModel: BloggerViewModel
     private lateinit var authManager: AuthManager
+    private lateinit var template: Template
 
     private val blog = Blog()
 
@@ -51,13 +57,30 @@ class ComposeFragment : Fragment(), ComposerCallback {
         fun newInstance() = ComposeFragment()
     }
 
+    override fun setArguments(args: Bundle?) {
+        super.setArguments(args)
+        blog.title = args?.get(Constants.BLOG_TITLE).toString()
+        blog.columnID = args?.getInt(Constants.BLOG_ID, blog.columnID)!!
+
+        template = when (args.get(Constants.BLOG_TEMPLATE)) {
+            Template.TITLE_WITH_CONTENT.toString() -> Template.TITLE_WITH_CONTENT
+            Template.TITLE_IMAGE_CONTENT.toString() -> Template.TITLE_IMAGE_CONTENT
+            else -> Template.BLANK_TEMPLATE
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.compose_fragment, container, false)
+        return when (template) {
+            Template.TITLE_WITH_CONTENT -> inflater.inflate(R.layout.compose_fragment, container, false)
+            Template.TITLE_IMAGE_CONTENT -> inflater.inflate(R.layout.compose_fragment, container, false)
+            else -> inflater.inflate(R.layout.compose_fragment, container, false)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        text_editor.text = constructBlogContent()
         text_editor.composerCallback = this
 
         bold_button.setOnClickListener {
@@ -113,7 +136,7 @@ class ComposeFragment : Fragment(), ComposerCallback {
     }
 
     override fun onStop() {
-        blog.content = HtmlCompat.toHtml(text_editor.text!!, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        updateBlog()
         viewModel.insertBlog(blog)
 
         super.onStop()
@@ -121,6 +144,24 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
         updateEditTools(selStart, selEnd)
+    }
+
+    private fun constructBlogContent(): SpannableStringBuilder {
+        if (blog.content == null) {
+            return SpannableStringBuilder()
+        }
+        val spanned = HtmlCompat.fromHtml(blog.content!!, HtmlCompat.FROM_HTML_MODE_LEGACY)
+        val spans = spanned.getSpans(0, spanned.length, StyleSpan::class.java)
+        val stringBuilder = SpannableStringBuilder(spanned.toString())
+        for (span in spans) {
+            spanned.getSpanStart(span)
+            stringBuilder.setSpan(span, spanned.getSpanStart(span), spanned.getSpanEnd(span), Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        }
+        return stringBuilder
+    }
+
+    private fun updateBlog() {
+        blog.content = HtmlCompat.toHtml(text_editor.text!!, HtmlCompat.FROM_HTML_MODE_LEGACY)
     }
 
     private fun updateEditTools(selStart: Int, selEnd: Int) {
@@ -166,11 +207,10 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
         val blogger = Blogger.Builder(netHttpTransport, jacksonFactory, googleCredential)
         blogger.applicationName = "Blogger-PostsInsert-Snippet/1.0"
-        //blogger.setHttpRequestInitializer(builder)
 
         val content = Post()
-        content.title = "A test post"
-        content.content = "With <code>HTML</code> content"
+        content.title = blog.title
+        content.content = blog.content
 
 
         launch {
