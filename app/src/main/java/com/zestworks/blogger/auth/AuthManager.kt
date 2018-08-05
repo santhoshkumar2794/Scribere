@@ -78,7 +78,7 @@ class AuthManager private constructor(context: Context) {
     }
 
     @AnyThread
-    private fun replace(state: AuthState): AuthState {
+    internal fun replace(state: AuthState): AuthState {
         writeState(state)
         mCurrentAuthState.set(state)
         return state

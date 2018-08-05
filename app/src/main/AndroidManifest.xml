@@ -17,6 +17,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+        </activity>
+
+        <activity android:name=".ui.compose.ComposeActivity">
             <intent-filter>
                 <action android:name="com.zestworks.blogger.HANDLE_AUTHORIZATION_RESPONSE" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -33,6 +36,7 @@
                 <data android:scheme="com.zestworks.blogger" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>

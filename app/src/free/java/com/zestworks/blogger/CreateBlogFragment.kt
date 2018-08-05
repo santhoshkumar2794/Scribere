@@ -1,5 +1,6 @@
 package com.zestworks.blogger
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import com.zestworks.blogger.ui.compose.ComposeActivity
 import com.zestworks.blogger.ui.compose.ComposeFragment
 import com.zestworks.blogger.ui.create_new.TemplateChooser
 import com.zestworks.blogger.ui.create_new.TemplateSelector
 import com.zestworks.blogger.ui.create_new.Template
+import com.zestworks.blogger.ui.listing.ListingFragment
 import kotlinx.android.synthetic.free.create_blog_fragment.*
 
 class CreateBlogFragment : Fragment(), TemplateSelector {
@@ -38,7 +41,7 @@ class CreateBlogFragment : Fragment(), TemplateSelector {
 
         enableCreate()
         create_blog.setOnClickListener {
-            openComposeFragment()
+            openComposer()
         }
 
         blog_title.addTextChangedListener(object : TextWatcher {
@@ -67,15 +70,19 @@ class CreateBlogFragment : Fragment(), TemplateSelector {
         create_blog.isEnabled = blog_title.text!!.isNotEmpty() && template != null
     }
 
-    private fun openComposeFragment() {
-        val composeFragment = ComposeFragment.newInstance()
-
+    private fun openComposer() {
         val bundle = Bundle()
         bundle.putString(Constants.BLOG_TITLE, blog_title.text.toString())
         bundle.putString(Constants.BLOG_TEMPLATE, this.template.toString())
-        composeFragment.arguments = bundle
 
-        activity!!.supportFragmentManager.beginTransaction().replace(R.id.container, composeFragment, "COMPOSE_FRAGMENT").commit()
+        val intent = Intent(context!!, ComposeActivity::class.java)
+        intent.putExtras(bundle)
+
+        activity!!.supportFragmentManager.popBackStack()
+
+        activity!!.startActivity(intent)
+
         activity!!.supportFragmentManager.executePendingTransactions()
+
     }
 }

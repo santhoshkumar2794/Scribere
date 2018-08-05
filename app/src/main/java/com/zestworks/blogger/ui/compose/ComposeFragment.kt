@@ -1,36 +1,22 @@
 package com.zestworks.blogger.ui.compose
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.StyleSpan
-import android.text.style.UnderlineSpan
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageButton
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import com.google.api.client.auth.oauth.OAuthCredentialsResponse
-import com.google.api.client.auth.oauth2.Credential
-import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow
-import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
-import com.google.api.client.googleapis.auth.oauth2.OAuth2Utils
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.blogger.Blogger
 import com.google.api.services.blogger.BloggerScopes
 import com.google.api.services.blogger.model.Post
-import com.google.api.services.oauth2.Oauth2
-import com.google.api.services.oauth2.Oauth2RequestInitializer
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import com.zestworks.blogger.Constants
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
@@ -39,8 +25,6 @@ import com.zestworks.blogger.ui.create_new.Template
 import com.zestworks.blogger.ui.listing.BloggerViewModel
 import kotlinx.android.synthetic.main.compose_fragment.*
 import kotlinx.coroutines.experimental.launch
-import java.io.InputStreamReader
-import java.util.*
 
 
 class ComposeFragment : Fragment(), ComposerCallback {
@@ -55,6 +39,10 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
     companion object {
         fun newInstance() = ComposeFragment()
+    }
+
+    init {
+        setHasOptionsMenu(true)
     }
 
     override fun setArguments(args: Bundle?) {
@@ -79,6 +67,7 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupToolbar()
 
         text_editor.text = constructBlogContent()
         text_editor.composerCallback = this
@@ -105,6 +94,25 @@ class ComposeFragment : Fragment(), ComposerCallback {
             } else {
                 text_editor.removeProps(Composer.PROPS.UNDERLINE)
             }
+        }
+    }
+
+    private fun setupToolbar() {
+        val appCompatActivity = activity as? AppCompatActivity
+        appCompatActivity?.setSupportActionBar(composer_toolbar)
+        composer_toolbar.title = blog.title
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.composer_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+        return when(item?.itemId){
+            R.id.publish -> {
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 

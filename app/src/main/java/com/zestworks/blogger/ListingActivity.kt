@@ -25,8 +25,7 @@ class ListingActivity : AppCompatActivity() {
         setContentView(R.layout.listing_activity)
 
         if (savedInstanceState == null) {
-            supportFragmentManager.beginTransaction()
-                    .replace(R.id.container, ListingFragment.newInstance())
+            supportFragmentManager.beginTransaction().replace(R.id.container, ListingFragment.newInstance(),"LISTING_FRAGMENT")
                     .commitNow()
         }
     }
