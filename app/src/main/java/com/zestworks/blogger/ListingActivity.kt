@@ -17,7 +17,7 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 class ListingActivity : AppCompatActivity() {
 
     companion object {
-        private const val USED_INTENT = "USED_INTENT"
+        public const val USED_INTENT = "USED_INTENT"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,27 +27,6 @@ class ListingActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction().replace(R.id.container, ListingFragment.newInstance(),"LISTING_FRAGMENT")
                     .commitNow()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        checkIntent(intent)
-    }
-
-    override fun onNewIntent(intent: Intent?) {
-        checkIntent(intent)
-    }
-
-    private fun checkIntent(intent: Intent?) {
-        when (intent!!.action) {
-            AuthManager.action -> {
-                if (!intent.hasExtra(USED_INTENT)) {
-                    val authManager = AuthManager.getInstance(this)
-                    authManager.handleAuthorizationResponse(this, intent)
-                    intent.putExtra(USED_INTENT, true)
-                }
-            }
         }
     }
 

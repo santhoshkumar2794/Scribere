@@ -11,6 +11,12 @@ class Blog {
     var columnID: Int = 0
 
     @ColumnInfo
+    var blogID : String? = null
+
+    @ColumnInfo
+    var postID : String? = null
+
+    @ColumnInfo
     var title: String? = null
 
     @ColumnInfo

@@ -21,6 +21,9 @@ class AuthManager private constructor(context: Context) {
     private val mPrefsLock: ReentrantLock = ReentrantLock()
     private val mPrefs: SharedPreferences = context.getSharedPreferences(STORE_NAME, Context.MODE_PRIVATE)
 
+    private val mAuthRequest = AtomicReference<AuthorizationRequest>()
+    private var mCurrentAuthState: AtomicReference<AuthState> = AtomicReference()
+
     companion object {
         private const val TAG = "AuthStateManager"
         private const val STORE_NAME = "AuthState"
@@ -31,7 +34,6 @@ class AuthManager private constructor(context: Context) {
         const val action = "com.zestworks.blogger.HANDLE_AUTHORIZATION_RESPONSE"
 
         private val AUTH_MANAGER_REF = AtomicReference(WeakReference<AuthManager>(null))
-        private lateinit var mCurrentAuthState: AtomicReference<AuthState>
 
 
         fun getInstance(context: Context): AuthManager {
@@ -43,10 +45,6 @@ class AuthManager private constructor(context: Context) {
 
             return manager
         }
-    }
-
-    init {
-        mCurrentAuthState = AtomicReference()
     }
 
     @AnyThread
@@ -64,7 +62,13 @@ class AuthManager private constructor(context: Context) {
     }
 
     @AnyThread
-    private fun updateAfterAuthorization(response: AuthorizationResponse?, ex: AuthorizationException?): AuthState {
+    internal fun getAuthRequest(): AuthorizationRequest {
+        return mAuthRequest.get()
+    }
+
+
+    @AnyThread
+    internal fun updateAfterAuthorization(response: AuthorizationResponse?, ex: AuthorizationException?): AuthState {
         val current = getCurrent()
         current.update(response, ex)
         return replace(current)
@@ -78,10 +82,15 @@ class AuthManager private constructor(context: Context) {
     }
 
     @AnyThread
-    internal fun replace(state: AuthState): AuthState {
+    private fun replace(state: AuthState): AuthState {
         writeState(state)
         mCurrentAuthState.set(state)
         return state
+    }
+
+    @AnyThread
+    internal fun replace(request: AuthorizationRequest) {
+        mAuthRequest.set(request)
     }
 
     @AnyThread
@@ -138,7 +147,7 @@ class AuthManager private constructor(context: Context) {
 
     }
 
-    internal fun handleAuthorizationResponse(context: Context,intent: Intent) {
+    internal fun handleAuthorizationResponse(context: Context, intent: Intent) {
         val response = AuthorizationResponse.fromIntent(intent)
         val error = AuthorizationException.fromIntent(intent)
 
@@ -148,7 +157,7 @@ class AuthManager private constructor(context: Context) {
 
         if (response?.authorizationCode != null) {
             updateAfterAuthorization(response, error)
-            performTokenRequest(context,response.createTokenExchangeRequest())
+            performTokenRequest(context, response.createTokenExchangeRequest())
         }
     }
 
