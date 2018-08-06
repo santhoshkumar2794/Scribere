@@ -4,20 +4,21 @@ import android.content.Context
 import android.graphics.Typeface
 import android.text.ParcelableSpan
 import android.text.Spanned
+import android.text.style.CharacterStyle
+import android.text.style.StrikethroughSpan
 import android.text.style.StyleSpan
 import android.text.style.UnderlineSpan
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import com.zestworks.blogger.ui.SpanData
 import com.zestworks.blogger.ui.StyleData
-import kotlinx.android.synthetic.main.compose_fragment.*
 
 class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText(context, attributeSet) {
 
     var composerCallback: ComposerCallback? = null
 
     enum class PROPS {
-        BOLD, ITALICS, UNDERLINE
+        BOLD, ITALICS, UNDERLINE, STRIKE_THROUGH
 
     }
 
@@ -35,6 +36,10 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
                 Typeface.ITALIC -> styleData.italics = true
             }
         }
+        for (span in text?.getSpans(selStart, selEnd, CharacterStyle::class.java)!!) {
+            if (span is StrikethroughSpan) styleData.strikeThrough = true
+            if (span is UnderlineSpan) styleData.underline = true
+        }
         return styleData
     }
 
@@ -43,6 +48,7 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
             Composer.PROPS.BOLD -> StyleSpan(Typeface.BOLD)
             Composer.PROPS.ITALICS -> StyleSpan(Typeface.ITALIC)
             Composer.PROPS.UNDERLINE -> UnderlineSpan()
+            Composer.PROPS.STRIKE_THROUGH -> StrikethroughSpan()
         }
         text?.setSpan(span, selStart, selEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
     }
@@ -56,7 +62,8 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
         when (propType) {
             Composer.PROPS.BOLD -> removeStyleSpan(Typeface.BOLD)
             Composer.PROPS.ITALICS -> removeStyleSpan(Typeface.ITALIC)
-            Composer.PROPS.UNDERLINE -> removeUnderlineSpan()
+            Composer.PROPS.UNDERLINE -> removeCharacterStyle(propType)
+            Composer.PROPS.STRIKE_THROUGH -> removeCharacterStyle(propType)
         }
         composerCallback?.onSelectionChanged(selectionStart, selectionEnd)
     }
@@ -85,22 +92,28 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
         reApplyRemovedProps(spanDataList)
     }
 
-    private fun removeUnderlineSpan() {
+    private fun removeCharacterStyle(propType: PROPS) {
         val spanDataList = ArrayList<SpanData>()
 
-        val styleSpans = text?.getSpans(selectionStart, selectionEnd, UnderlineSpan::class.java)!!
+        val styleSpans = text?.getSpans(selectionStart, selectionEnd, CharacterStyle::class.java)!!
         for (styleSpan in styleSpans) {
+
+            when (propType) {
+                Composer.PROPS.UNDERLINE -> styleSpan as? UnderlineSpan
+                Composer.PROPS.STRIKE_THROUGH -> styleSpan as? StrikethroughSpan
+                else -> null
+            } ?: continue
+
             val spanStart = text?.getSpanStart(styleSpan)!!
             val spanEnd = text?.getSpanEnd(styleSpan)!!
-            spanDataList.add(SpanData(PROPS.UNDERLINE, spanStart, spanEnd))
-
+            spanDataList.add(SpanData(propType, spanStart, spanEnd))
             text?.removeSpan(styleSpan)
         }
 
         reApplyRemovedProps(spanDataList)
     }
 
-    private fun reApplyRemovedProps(spanDataList : ArrayList<SpanData>){
+    private fun reApplyRemovedProps(spanDataList: ArrayList<SpanData>) {
         for (spanData in spanDataList) {
             if (spanData.startIndex < selectionStart) {
                 applyProps(spanData.propType, spanData.startIndex, selectionStart)

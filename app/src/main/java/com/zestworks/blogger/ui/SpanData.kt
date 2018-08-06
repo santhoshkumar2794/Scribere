@@ -9,4 +9,5 @@ class StyleData {
     internal var bold = false
     internal var italics = false
     internal var underline = false
+    internal var strikeThrough = false
 }

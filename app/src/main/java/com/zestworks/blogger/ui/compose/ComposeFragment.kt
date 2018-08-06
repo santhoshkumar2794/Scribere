@@ -83,6 +83,10 @@ class ComposeFragment : Fragment(), ComposerCallback {
         text_editor.text = constructBlogContent()
         text_editor.composerCallback = this
 
+        setupEditToolbar()
+    }
+
+    private fun setupEditToolbar() {
         bold_button.setOnClickListener {
             if (!it.isSelected) {
                 text_editor.applyProps(Composer.PROPS.BOLD)
@@ -106,6 +110,16 @@ class ComposeFragment : Fragment(), ComposerCallback {
                 text_editor.removeProps(Composer.PROPS.UNDERLINE)
             }
         }
+
+        strike_through_button.setOnClickListener {
+            if (!it.isSelected) {
+                text_editor.applyProps(Composer.PROPS.STRIKE_THROUGH)
+            } else {
+                text_editor.removeProps(Composer.PROPS.STRIKE_THROUGH)
+            }
+        }
+
+        font_size_button.isEnabled = false
     }
 
     private fun setupToolbar() {
@@ -212,6 +226,7 @@ class ComposeFragment : Fragment(), ComposerCallback {
         setToolState(bold_button, style.bold)
         setToolState(italic_button, style.italics)
         setToolState(underline_button, style.underline)
+        setToolState(strike_through_button, style.strikeThrough)
     }
 
     private fun setToolState(icon: ImageButton, state: Boolean) {
