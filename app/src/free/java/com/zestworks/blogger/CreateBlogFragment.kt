@@ -14,7 +14,6 @@ import com.zestworks.blogger.ui.compose.ComposeFragment
 import com.zestworks.blogger.ui.create_new.TemplateChooser
 import com.zestworks.blogger.ui.create_new.TemplateSelector
 import com.zestworks.blogger.ui.create_new.Template
-import com.zestworks.blogger.ui.listing.ListingFragment
 import kotlinx.android.synthetic.free.create_blog_fragment.*
 
 class CreateBlogFragment : Fragment(), TemplateSelector {
@@ -35,7 +34,7 @@ class CreateBlogFragment : Fragment(), TemplateSelector {
 
         template_selector.layoutManager = GridLayoutManager(view.context, 2)
 
-        val templateIDs = arrayOf(Template.BLANK_TEMPLATE, Template.TITLE_WITH_CONTENT)
+        val templateIDs = arrayOf(Template.BLANK_TEMPLATE)
         templateChooser = TemplateChooser(templateIDs, this)
         template_selector.adapter = templateChooser
 
@@ -75,14 +74,10 @@ class CreateBlogFragment : Fragment(), TemplateSelector {
         bundle.putString(Constants.BLOG_TITLE, blog_title.text.toString())
         bundle.putString(Constants.BLOG_TEMPLATE, this.template.toString())
 
-        val intent = Intent(context!!, ComposeActivity::class.java)
-        intent.putExtras(bundle)
 
-        activity!!.supportFragmentManager.popBackStack()
-
-        activity!!.startActivity(intent)
-
+        val composeFragment = ComposeFragment.newInstance()
+        composeFragment.arguments = bundle
+        activity!!.supportFragmentManager.beginTransaction().replace(R.id.compose_container, composeFragment, Constants.COMPOSE_FRAGMENT).commit()
         activity!!.supportFragmentManager.executePendingTransactions()
-
     }
 }

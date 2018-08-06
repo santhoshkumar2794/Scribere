@@ -18,6 +18,11 @@ enum class Template {
         override fun getID() = R.mipmap.template_locked
 
         override fun toString(): String = "TITLE_IMAGE_CONTENT"
+    },
+    DEFAULT {
+        override fun getID() = 0
+
+        override fun toString(): String = "DEFAULT"
     };
 
     abstract fun getID(): Int

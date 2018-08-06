@@ -1,10 +1,10 @@
 package com.zestworks.blogger.ui.compose
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.zestworks.blogger.Constants
+import com.zestworks.blogger.CreateBlogFragment
 import com.zestworks.blogger.ListingActivity
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
@@ -15,17 +15,15 @@ import net.openid.appauth.TokenRequest
 
 class ComposeActivity : AppCompatActivity() {
 
-    private lateinit var authManager : AuthManager
+    private lateinit var authManager: AuthManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.compose_activity)
 
         if (savedInstanceState == null) {
-            val composeFragment = ComposeFragment.newInstance()
-            composeFragment.arguments = intent.extras
-            supportFragmentManager.beginTransaction().replace(R.id.compose_container, composeFragment, Constants.COMPOSE_FRAGMENT)
-                    .commitNow()
+            val createBlogFragment = CreateBlogFragment.newInstance()
+            supportFragmentManager.beginTransaction().replace(R.id.compose_container, createBlogFragment, "CREATE_BLOG_FRAGMENT").commitNow()
         }
 
         authManager = AuthManager.getInstance(this)

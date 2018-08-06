@@ -1,5 +1,6 @@
 package com.zestworks.blogger.ui.listing
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.zestworks.blogger.CreateBlogFragment
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.model.Blog
+import com.zestworks.blogger.ui.compose.ComposeActivity
 import com.zestworks.blogger.ui.compose.ComposeFragment
 import kotlinx.android.synthetic.main.listing_fragment.*
 
@@ -53,9 +55,8 @@ class ListingFragment : Fragment() {
     }
 
     private fun openCreateNew() {
-        val createBlogFragment = CreateBlogFragment.newInstance()
-        activity!!.supportFragmentManager.beginTransaction().replace(R.id.container, createBlogFragment, "CREATE_BLOG_FRAGMENT").addToBackStack(null).commit()
-        activity!!.supportFragmentManager.executePendingTransactions()
+        val intent = Intent(context!!, ComposeActivity::class.java)
+        activity!!.startActivity(intent)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
