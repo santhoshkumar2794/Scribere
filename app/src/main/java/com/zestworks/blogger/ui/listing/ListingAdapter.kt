@@ -30,6 +30,8 @@ class ListingAdapter(context: Context, diffUtil: DiffUtil.ItemCallback<Blog>) : 
         val blog = getItem(position)
         holder.index = position
         holder.updateLayoutParams()
+
+        holder.itemView.blog_title.text = blog?.title
     }
 
     private fun obtainHolderWidth(context: Context): Int {
@@ -50,7 +52,8 @@ class ListingAdapter(context: Context, diffUtil: DiffUtil.ItemCallback<Blog>) : 
 
             val layoutParams = itemView.blog_holder.layoutParams as RecyclerView.LayoutParams
             layoutParams.width = holderWidth
-            layoutParams.topMargin = (dimension * 1.5f).toInt()
+            //layoutParams.topMargin = (dimension * 1.5f).toInt()
+            layoutParams.bottomMargin = (dimension * 1.5f).toInt()
             if (index % 2 == 0) {
                 layoutParams.leftMargin = (dimension * 1.5f).toInt()
                 layoutParams.rightMargin = 0

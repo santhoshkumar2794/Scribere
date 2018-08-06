@@ -34,13 +34,6 @@ class ListingFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setupListing()
         create_new.setOnClickListener {
-            /*val authManager = AuthManager.getInstance(context!!)
-
-            if (!authManager.getCurrent().isAuthorized) {
-                authManager.createAuthorizationService(context!!)
-            } else {
-                openCreateNew()
-            }*/
             openCreateNew()
         }
     }

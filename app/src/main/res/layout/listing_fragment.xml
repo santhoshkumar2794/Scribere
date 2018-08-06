@@ -21,14 +21,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:elevation="0dp"
-            app:elevation="0dp">
+            app:elevation="0dp"
+            app:liftOnScroll="true">
 
             <androidx.appcompat.widget.Toolbar
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:elevation="0dp"
-                app:elevation="0dp"
-                android:textAlignment="center">
+                android:textAlignment="center"
+                app:elevation="0dp">
 
                 <TextView
                     style="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
@@ -36,35 +37,30 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="16dp"
                     android:gravity="center"
-                    android:textColor="@color/blue"
-                    android:text="@string/app_name" />
+                    android:text="@string/app_name"
+                    android:textColor="@color/blue" />
             </androidx.appcompat.widget.Toolbar>
         </com.google.android.material.appbar.AppBarLayout>
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/listing_swipe_refresh"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/listing_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            android:numColumns="auto_fit"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/listing_recycler_view"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:numColumns="auto_fit"/>
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/create_new"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="101dp"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
             android:src="@drawable/ic_mode_edit_black_24dp"
             app:backgroundTint="@color/white"
-            app:fabSize="normal"
-            app:layout_anchor="@id/listing_app_bar" />
+            app:fabSize="normal" />
 
-        <com.google.android.material.bottomappbar.BottomAppBar
+        <!--<com.google.android.material.bottomappbar.BottomAppBar
             android:id="@+id/listing_app_bar"
             style="@style/Widget.MaterialComponents.BottomAppBar.Colored"
             android:layout_width="match_parent"
@@ -72,7 +68,7 @@
             android:layout_gravity="bottom"
             app:fabAlignmentMode="end"
             app:hideOnScroll="true"
-            app:navigationIcon="@drawable/ic_menu_black_24dp" />
+            app:navigationIcon="@drawable/ic_menu_black_24dp" />-->
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
