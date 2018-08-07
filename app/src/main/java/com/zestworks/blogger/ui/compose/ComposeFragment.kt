@@ -4,14 +4,15 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
+import android.opengl.Visibility
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.StyleSpan
 import android.util.Log
 import android.view.*
-import android.widget.ArrayAdapter
 import android.widget.ImageButton
+import android.widget.Toast
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
@@ -127,6 +128,10 @@ class ComposeFragment : Fragment(), ComposerCallback {
         composer_toolbar.title = blog.title
     }
 
+    private fun publishLoaderVisibility(visibility: Int) {
+        progress_layout.visibility = visibility
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
         inflater?.inflate(R.menu.composer_menu, menu)
     }
@@ -141,6 +146,7 @@ class ComposeFragment : Fragment(), ComposerCallback {
                 } else {
                     onAuthResponse()
                 }
+                publishLoaderVisibility(View.VISIBLE)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -305,7 +311,12 @@ class ComposeFragment : Fragment(), ComposerCallback {
                 blog.postID = post.id
 
                 Log.e("Post", "inserted successfully")
-                publishInProgress = false
+                view?.post {
+                    publishInProgress = false
+                    publishLoaderVisibility(View.GONE)
+                    Toast.makeText(getContext(), "Uploaded Successfully", Toast.LENGTH_LONG).show()
+                }
+
             }
 
         }
