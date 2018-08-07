@@ -4,4 +4,6 @@
     <dimen name="template__image_width">170dp</dimen>
     <dimen name="template_image_height">180dp</dimen>
     <dimen name="template_top_margin">16dp</dimen>
+    <dimen name="tool_button_margin">16dp</dimen>
+    <dimen name="tool_button_size">36dp</dimen>
 </resources>

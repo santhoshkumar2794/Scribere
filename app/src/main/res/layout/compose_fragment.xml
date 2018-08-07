@@ -61,54 +61,67 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
 
                 <ImageButton
                     android:id="@+id/bold_button"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_format_bold_black_24dp"/>
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
+                    android:src="@drawable/ic_format_bold_black_24dp" />
 
                 <ImageButton
                     android:id="@+id/italic_button"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
                     android:src="@drawable/ic_format_italic_black_24dp" />
 
                 <ImageButton
                     android:id="@+id/underline_button"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
                     android:src="@drawable/ic_format_underlined_black_24dp" />
 
 
                 <ImageButton
                     android:id="@+id/strike_through_button"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
-                    android:src="@drawable/ic_strikethrough_s_black_24dp"
-                    />
-
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
+                    android:src="@drawable/ic_strikethrough_s_black_24dp" />
 
                 <ImageButton
-                    android:id="@+id/font_size_button"
+                    android:id="@+id/left_alignment"
                     style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:layout_weight="1"
-                    android:clickable="false"
-                    android:src="@drawable/ic_format_size_black_24dp" />
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
+                    android:src="@drawable/ic_format_align_left_black_24dp" />
+
+                <ImageButton
+                    android:id="@+id/center_alignment"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
+                    android:src="@drawable/ic_format_align_center_black_24dp" />
+
+                <ImageButton
+                    android:id="@+id/right_alignment"
+                    style="@style/Widget.MaterialComponents.Button.TextButton"
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
+                    android:src="@drawable/ic_format_align_right_black_24dp" />
 
             </LinearLayout>
 

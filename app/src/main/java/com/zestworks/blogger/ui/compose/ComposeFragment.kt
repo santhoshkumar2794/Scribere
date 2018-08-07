@@ -10,6 +10,7 @@ import android.text.Spanned
 import android.text.style.StyleSpan
 import android.util.Log
 import android.view.*
+import android.widget.ArrayAdapter
 import android.widget.ImageButton
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
@@ -118,8 +119,6 @@ class ComposeFragment : Fragment(), ComposerCallback {
                 text_editor.removeProps(Composer.PROPS.STRIKE_THROUGH)
             }
         }
-
-        font_size_button.isEnabled = false
     }
 
     private fun setupToolbar() {

@@ -18,7 +18,7 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
     var composerCallback: ComposerCallback? = null
 
     enum class PROPS {
-        BOLD, ITALICS, UNDERLINE, STRIKE_THROUGH
+        BOLD, ITALICS, UNDERLINE, STRIKE_THROUGH, LEFT_ALIGNMENT, CENTER_ALIGNMENT, RIGHT_ALIGNMENT
 
     }
 
@@ -44,13 +44,18 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
     }
 
     private fun applyProps(propType: PROPS, selStart: Int, selEnd: Int) {
-        val span: ParcelableSpan = when (propType) {
+        val span: ParcelableSpan? = when (propType) {
             Composer.PROPS.BOLD -> StyleSpan(Typeface.BOLD)
             Composer.PROPS.ITALICS -> StyleSpan(Typeface.ITALIC)
             Composer.PROPS.UNDERLINE -> UnderlineSpan()
             Composer.PROPS.STRIKE_THROUGH -> StrikethroughSpan()
+            PROPS.LEFT_ALIGNMENT,PROPS.RIGHT_ALIGNMENT,PROPS.CENTER_ALIGNMENT -> null
+            else -> null
         }
-        text?.setSpan(span, selStart, selEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+
+        if (span != null) {
+            text?.setSpan(span, selStart, selEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        }
     }
 
     internal fun applyProps(propType: PROPS) {
