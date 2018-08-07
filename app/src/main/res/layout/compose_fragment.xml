@@ -105,6 +105,7 @@
                     android:layout_width="@dimen/tool_button_size"
                     android:layout_height="@dimen/tool_button_size"
                     android:layout_margin="@dimen/tool_button_margin"
+                    android:visibility="gone"
                     android:src="@drawable/ic_format_align_left_black_24dp" />
 
                 <ImageButton
@@ -113,6 +114,7 @@
                     android:layout_width="@dimen/tool_button_size"
                     android:layout_height="@dimen/tool_button_size"
                     android:layout_margin="@dimen/tool_button_margin"
+                    android:visibility="gone"
                     android:src="@drawable/ic_format_align_center_black_24dp" />
 
                 <ImageButton
@@ -121,6 +123,7 @@
                     android:layout_width="@dimen/tool_button_size"
                     android:layout_height="@dimen/tool_button_size"
                     android:layout_margin="@dimen/tool_button_margin"
+                    android:visibility="gone"
                     android:src="@drawable/ic_format_align_right_black_24dp" />
 
             </LinearLayout>

@@ -43,24 +43,42 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
         return styleData
     }
 
-    private fun applyProps(propType: PROPS, selStart: Int, selEnd: Int) {
-        val span: ParcelableSpan? = when (propType) {
-            Composer.PROPS.BOLD -> StyleSpan(Typeface.BOLD)
-            Composer.PROPS.ITALICS -> StyleSpan(Typeface.ITALIC)
-            Composer.PROPS.UNDERLINE -> UnderlineSpan()
-            Composer.PROPS.STRIKE_THROUGH -> StrikethroughSpan()
-            PROPS.LEFT_ALIGNMENT,PROPS.RIGHT_ALIGNMENT,PROPS.CENTER_ALIGNMENT -> null
-            else -> null
-        }
-
-        if (span != null) {
-            text?.setSpan(span, selStart, selEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
-        }
-    }
-
     internal fun applyProps(propType: PROPS) {
         applyProps(propType, selectionStart, selectionEnd)
         composerCallback?.onSelectionChanged(selectionStart, selectionEnd)
+    }
+
+    private fun applyProps(propType: PROPS, selStart: Int, selEnd: Int) {
+        applyStyleProps(propType, selStart, selEnd)
+        applyCharacterStyle(propType, selStart, selEnd)
+    }
+
+    private fun applyStyleProps(propType: PROPS, selStart: Int, selEnd: Int) {
+        var span: StyleSpan? = null
+        if (propType == PROPS.BOLD) {
+            span = StyleSpan(Typeface.BOLD)
+        } else if (propType == PROPS.ITALICS) {
+            span = StyleSpan(Typeface.ITALIC)
+        }
+
+        if (span == null) {
+            return
+        }
+        text?.setSpan(span, selStart, selEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+    }
+
+    private fun applyCharacterStyle(propType: PROPS, selStart: Int, selEnd: Int) {
+        var span: CharacterStyle? = null
+        if (propType == PROPS.UNDERLINE) {
+            span = UnderlineSpan()
+        } else if (propType == PROPS.STRIKE_THROUGH) {
+            span = StrikethroughSpan()
+        }
+
+        if (span == null) {
+            return
+        }
+        text?.setSpan(span, selStart, selEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
     }
 
     internal fun removeProps(propType: PROPS) {
