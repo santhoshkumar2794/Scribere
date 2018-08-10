@@ -5,7 +5,7 @@
     <item
         android:id="@+id/publish"
         android:icon="@drawable/ic_publish_black_24dp"
-        android:iconTint="@color/colorPrimaryDark"
+        android:iconTint="#f54"
         android:title="Publish"
         app:showAsAction="ifRoom" />
 </menu>

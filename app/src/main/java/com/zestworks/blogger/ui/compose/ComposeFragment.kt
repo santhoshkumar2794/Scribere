@@ -13,21 +13,23 @@ import android.util.Log
 import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.annotation.MainThread
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.blogger.Blogger
 import com.google.api.services.blogger.BloggerScopes
+import com.google.api.services.blogger.model.Blog
 import com.google.api.services.blogger.model.Post
 import com.zestworks.blogger.Constants
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
-import com.zestworks.blogger.model.Blog
 import com.zestworks.blogger.ui.create_new.Template
 import com.zestworks.blogger.ui.listing.BloggerViewModel
 import kotlinx.android.synthetic.main.compose_fragment.*
@@ -36,14 +38,14 @@ import net.openid.appauth.*
 import java.util.concurrent.Executors
 
 
-class ComposeFragment : Fragment(), ComposerCallback {
+class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     private val selectedColor: Int = Color.RED
 
     private lateinit var viewModel: BloggerViewModel
     private lateinit var template: Template
     private var executorService = Executors.newSingleThreadExecutor()
-    private val blog = Blog()
+    private val blog = com.zestworks.blogger.model.Blog()
 
     private var publishInProgress: Boolean = false
 
@@ -123,13 +125,11 @@ class ComposeFragment : Fragment(), ComposerCallback {
     }
 
     private fun setupToolbar() {
-        val appCompatActivity = activity as? AppCompatActivity
-        appCompatActivity?.setSupportActionBar(composer_toolbar)
-        composer_toolbar.title = blog.title
+        activity!!.title = blog.title
     }
 
     private fun publishLoaderVisibility(visibility: Int) {
-        progress_layout.visibility = visibility
+        //progress_layout.visibility = visibility
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
@@ -193,7 +193,7 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
     override fun onStop() {
         updateBlog()
-        viewModel.insertBlog(blog)
+        //viewModel.insertBlog(blog)
 
         authorizationService.dispose()
         super.onStop()
@@ -302,7 +302,12 @@ class ComposeFragment : Fragment(), ComposerCallback {
 
 
             launch {
-                val postsInsertAction = blogger.build().posts().insert("734820219569993445", content)
+                val listByUser = blogger.build().blogs().listByUser("self")
+                val blogList = listByUser.execute()
+                view?.post {
+                    showBlogList(blogList.items)
+                }
+                /*val postsInsertAction = blogger.build().posts().insert(blogList.items[0].id, content)
                 postsInsertAction.fields = "id,blog,author/displayName,content,published,title,url"
                 postsInsertAction.isDraft = true
                 val post = postsInsertAction.execute()
@@ -315,10 +320,57 @@ class ComposeFragment : Fragment(), ComposerCallback {
                     publishInProgress = false
                     publishLoaderVisibility(View.GONE)
                     Toast.makeText(getContext(), "Uploaded Successfully", Toast.LENGTH_LONG).show()
-                }
+                }*/
 
             }
 
+        }
+    }
+
+    @MainThread
+    private fun showBlogList(blogList: List<Blog>) {
+        val blogListAdapter = BlogListAdapter(blogList, this)
+        blog_list_recyler.layoutManager = LinearLayoutManager(context!!, LinearLayoutManager.VERTICAL, false)
+        blog_list_recyler.adapter = blogListAdapter
+
+        blog_list_view.visibility = View.VISIBLE
+    }
+
+    override fun onBlogSelected(blogID: String) {
+
+        blog_list_view.visibility = View.GONE
+
+        authManager.getCurrent().performActionWithFreshTokens(authorizationService) { accessToken, idToken, ex ->
+            val googleCredential = GoogleCredential()
+            googleCredential.accessToken = accessToken
+            googleCredential.createScoped(arrayListOf(BloggerScopes.BLOGGER))
+
+            val netHttpTransport = NetHttpTransport()
+            val jacksonFactory = JacksonFactory()
+
+            val blogger = Blogger.Builder(netHttpTransport, jacksonFactory, googleCredential)
+            blogger.applicationName = "Blogger-PostsInsert-Snippet/1.0"
+
+            val content = Post()
+            content.title = blog.title
+            content.content = blog.content
+
+            val postsInsertAction = blogger.build().posts().insert(blogID, content)
+            postsInsertAction.fields = "id,blog,author/displayName,content,published,title,url"
+            postsInsertAction.isDraft = true
+
+            launch {
+
+                val post = postsInsertAction.execute()
+
+                blog.blogID = post.blog.id
+                blog.postID = post.id
+
+                view?.post {
+                    publishInProgress = false
+                    publishLoaderVisibility(View.GONE)
+                }
+            }
         }
     }
 }

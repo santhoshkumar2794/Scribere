@@ -9,4 +9,12 @@
         <item name="android:colorBackground">@color/white</item>
     </style>
 
+    <style name="ComposerTheme" parent="Theme.MaterialComponents.Light">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorPrimaryDark">@color/grey</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:colorBackground">@color/white</item>
+    </style>
+
 </resources>

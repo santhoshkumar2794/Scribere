@@ -22,7 +22,8 @@
         <activity
             android:name=".ui.compose.ComposeActivity"
             android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTask">
+            android:launchMode="singleTask"
+            android:theme="@style/ComposerTheme">
             <intent-filter>
                 <action android:name="com.zestworks.blogger.HANDLE_AUTHORIZATION_RESPONSE" />
                 <category android:name="android.intent.category.DEFAULT" />
