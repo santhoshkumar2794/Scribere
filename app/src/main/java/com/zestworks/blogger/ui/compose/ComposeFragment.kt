@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
+import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
 import android.view.*
 import android.widget.ImageButton
@@ -85,7 +86,9 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     private fun constructBlogContent(): SpannableStringBuilder {
         if (blog.content == null) {
-            return SpannableStringBuilder()
+            val stringBuilder = SpannableStringBuilder()
+            stringBuilder.setSpan(AbsoluteSizeSpan(Math.round(26 * 1.66f)), 0, 0, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+            return stringBuilder
         }
         val spanned = HtmlCompat.fromHtml(blog.content!!, HtmlCompat.FROM_HTML_MODE_LEGACY)
         val spans = spanned.getSpans(0, spanned.length, StyleSpan::class.java)
@@ -128,6 +131,24 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             } else {
                 text_editor.removeProps(Composer.PROPS.STRIKE_THROUGH)
             }
+        }
+
+        left_alignment.setOnClickListener {
+            if (!it.isSelected) {
+                text_editor.applyProps(Composer.PROPS.LEFT_ALIGNMENT)
+            } else {
+                text_editor.removeProps(Composer.PROPS.LEFT_ALIGNMENT)
+            }
+        }
+
+        font_decrease.setOnClickListener {
+            val size = font_size.text.toString().toInt()
+            text_editor.setFontSize(size - 1)
+        }
+
+        font_increase.setOnClickListener {
+            val size = font_size.text.toString().toInt()
+            text_editor.setFontSize(size + 1)
         }
     }
 
@@ -174,7 +195,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
     }
 
     override fun onDestroy() {
-        viewModel.insertBlog(blog)
+        //viewModel.insertBlog(blog)
         executorService.shutdown()
         super.onDestroy()
     }
@@ -189,6 +210,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
         setToolState(italic_button, style.italics)
         setToolState(underline_button, style.underline)
         setToolState(strike_through_button, style.strikeThrough)
+        font_size.text = style.fontSize.toString()
     }
 
     private fun setToolState(icon: ImageButton, state: Boolean) {

@@ -2,12 +2,8 @@ package com.zestworks.blogger.ui.compose
 
 import android.content.Context
 import android.graphics.Typeface
-import android.text.ParcelableSpan
 import android.text.Spanned
-import android.text.style.CharacterStyle
-import android.text.style.StrikethroughSpan
-import android.text.style.StyleSpan
-import android.text.style.UnderlineSpan
+import android.text.style.*
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
 import com.zestworks.blogger.ui.SpanData
@@ -18,7 +14,7 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
     var composerCallback: ComposerCallback? = null
 
     enum class PROPS {
-        BOLD, ITALICS, UNDERLINE, STRIKE_THROUGH, LEFT_ALIGNMENT, CENTER_ALIGNMENT, RIGHT_ALIGNMENT
+        BOLD, ITALICS, UNDERLINE, STRIKE_THROUGH, LEFT_ALIGNMENT, CENTER_ALIGNMENT, RIGHT_ALIGNMENT, FONT_SIZE
 
     }
 
@@ -39,6 +35,12 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
         for (span in text?.getSpans(selStart, selEnd, CharacterStyle::class.java)!!) {
             if (span is StrikethroughSpan) styleData.strikeThrough = true
             if (span is UnderlineSpan) styleData.underline = true
+        }
+
+        for (span in text?.getSpans(selStart, selEnd, MetricAffectingSpan::class.java)!!) {
+            if (span is AbsoluteSizeSpan) {
+                styleData.fontSize = Math.round(span.size / 1.66f)
+            }
         }
         return styleData
     }
@@ -79,6 +81,15 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
             return
         }
         text?.setSpan(span, selStart, selEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+    }
+
+    private fun applyParaStyle(propType: PROPS, selStart: Int, selEnd: Int) {
+
+    }
+
+    internal fun setFontSize(size: Int) {
+        text?.setSpan(AbsoluteSizeSpan(Math.round(size * 1.66f)), selectionStart, selectionEnd, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+        composerCallback?.onSelectionChanged(selectionStart, selectionEnd)
     }
 
     internal fun removeProps(propType: PROPS) {

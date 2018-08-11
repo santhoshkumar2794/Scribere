@@ -10,4 +10,8 @@ class StyleData {
     internal var italics = false
     internal var underline = false
     internal var strikeThrough = false
+    internal var leftAlignment = false
+    internal var centerAlignment = false
+    internal var rightAlignment = false
+    internal var fontSize = 12
 }
