@@ -146,7 +146,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
                 val intent = Intent(context!!, BlogSelectActivity::class.java)
                 intent.putExtra(Constants.BLOG_COLUMN_ID, blog.columnID)
-                activity!!.startActivityForResult(intent, BLOG_UPLOAD_REQUEST_CODE)
+                startActivityForResult(intent, BLOG_UPLOAD_REQUEST_CODE)
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -169,13 +169,12 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     override fun onStop() {
         updateBlog()
-        viewModel.insertBlog(blog)
-
         authorizationService.dispose()
         super.onStop()
     }
 
     override fun onDestroy() {
+        viewModel.insertBlog(blog)
         executorService.shutdown()
         super.onDestroy()
     }
@@ -248,12 +247,16 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             postsInsertAction.fields = "id,blog,author/displayName,content,published,title,url"
             postsInsertAction.isDraft = true
 
-            Toast.makeText(context, "Publishing the blog", Toast.LENGTH_LONG).show()
+            Toast.makeText(context, getString(R.string.publishing_the_blog), Toast.LENGTH_SHORT).show()
             launch {
                 val post = postsInsertAction.execute()
 
                 blog.blogID = post.blog.id
                 blog.postID = post.id
+
+                view?.post {
+                    Toast.makeText(view?.context!!, getString(R.string.published_success_draft), Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

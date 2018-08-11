@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,6 +40,8 @@ class BlogSelectActivity : AppCompatActivity(), BlogListCallback {
 
         if (!authManager.getCurrent().isAuthorized) {
             executorService.submit(this::performAuthRequest)
+        }else{
+            fetchBlogList()
         }
     }
 
@@ -110,13 +113,15 @@ class BlogSelectActivity : AppCompatActivity(), BlogListCallback {
             authManager.updateAfterTokenResponse(tokenResponse, authException)
 
             runOnUiThread {
-                progress_message.text = "Fetching the list of blog."
                 fetchBlogList()
             }
         }
     }
 
     private fun fetchBlogList() {
+        loader.visibility = View.VISIBLE
+        progress_message.text = getString(R.string.fetching_list_blog)
+
         authManager.getCurrent().performActionWithFreshTokens(authorizationService) { accessToken, idToken, ex ->
             val googleCredential = GoogleCredential()
             googleCredential.accessToken = accessToken
@@ -142,6 +147,8 @@ class BlogSelectActivity : AppCompatActivity(), BlogListCallback {
     private fun displayBlogList(blogList: List<Blog>) {
         blog_list_view.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         blog_list_view.adapter = BlogListAdapter(blogList, this)
+
+        loader.visibility = View.GONE
     }
 
     override fun onBlogSelected(blogID: String) {

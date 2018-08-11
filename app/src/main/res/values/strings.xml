@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Scribere</string>
+    <string name="publishing_the_blog">Publishing the blog</string>
+    <string name="fetching_list_blog">Fetching the list of blog.</string>
+    <string name="published_success_draft">Published successfully as draft</string>
 </resources>
