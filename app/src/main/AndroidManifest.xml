@@ -10,7 +10,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ListingActivity">
+        
+        <activity
+            android:name=".ListingActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,9 +24,13 @@
 
         <activity
             android:name=".ui.compose.ComposeActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:launchMode="singleTask"
-            android:theme="@style/ComposerTheme">
+            android:launchMode="standard"
+            android:theme="@style/ComposerTheme"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ui.blog_uploader.BlogSelectActivity"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="com.zestworks.blogger.HANDLE_AUTHORIZATION_RESPONSE" />
                 <category android:name="android.intent.category.DEFAULT" />

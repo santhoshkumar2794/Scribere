@@ -7,4 +7,5 @@
     <color name="grey">#a7a7a7</color>
     <color name="blue">#1976D2</color>
     <color name="template_background">#bcbcbc</color>
+    <color name="black">#000000</color>
 </resources>

@@ -1,14 +1,11 @@
 package com.zestworks.blogger.auth
 
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.net.Uri
-import android.util.Log
 import androidx.annotation.AnyThread
-import androidx.annotation.MainThread
-import androidx.annotation.NonNull
+import androidx.annotation.WorkerThread
 import net.openid.appauth.*
 import org.json.JSONException
 import java.lang.ref.WeakReference
@@ -129,22 +126,18 @@ class AuthManager private constructor(context: Context) {
         }
     }
 
-    internal fun createAuthorizationService(context: Context) {
+    @WorkerThread
+    internal fun createAuthorizationService() {
         val serviceConfiguration = AuthorizationServiceConfiguration(
                 Uri.parse("https://accounts.google.com/o/oauth2/v2/auth") /* auth endpoint */,
                 Uri.parse("https://www.googleapis.com/oauth2/v4/token") /* token endpoint */
         )
 
-        val builder = AuthorizationRequest.Builder(serviceConfiguration, clientID, AuthorizationRequest.RESPONSE_TYPE_CODE, Uri.parse(reDirectUriPath))
+
+        val builder = AuthorizationRequest.Builder(serviceConfiguration, AuthManager.clientID, AuthorizationRequest.RESPONSE_TYPE_CODE, Uri.parse(AuthManager.reDirectUriPath))
         builder.setScope("https://www.googleapis.com/auth/blogger")
-        val request = builder.build()
 
-        val authorizationService = AuthorizationService(context)
-
-        val postAuthorizationIntent = Intent(action)
-        val pendingIntent = PendingIntent.getActivity(context, request.hashCode(), postAuthorizationIntent, 0)
-        authorizationService.performAuthorizationRequest(request, pendingIntent)
-
+        replace(builder.build())
     }
 
     internal fun handleAuthorizationResponse(context: Context, intent: Intent) {
