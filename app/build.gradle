@@ -70,6 +70,10 @@ dependencies {
     //Blogger Services
     implementation 'com.google.apis:google-api-services-blogger:v3-rev59-1.23.0'
     implementation 'com.google.apis:google-api-services-oauth2:v1-rev143-1.23.0'
+    //Play Services
+    implementation 'com.google.android.gms:play-services-auth:15.0.1'
+    //Firebase
+    implementation 'com.google.firebase:firebase-core:16.0.0'
     //Appauth
     implementation 'net.openid:appauth:0.2.0'
     //Matisse
@@ -77,3 +81,4 @@ dependencies {
     //Picasso
     implementation 'com.squareup.picasso:picasso:2.5.1'
 }
+apply plugin: 'com.google.gms.google-services'
