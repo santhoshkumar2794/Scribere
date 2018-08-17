@@ -1,6 +1,9 @@
 package com.zestworks.blogger.ui.compose
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.text.SpannableStringBuilder
@@ -10,6 +13,8 @@ import android.text.style.StyleSpan
 import android.view.*
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
@@ -25,6 +30,9 @@ import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.ui.blog_uploader.BlogSelectActivity
 import com.zestworks.blogger.ui.create_new.Template
 import com.zestworks.blogger.ui.listing.BloggerViewModel
+import com.zhihu.matisse.Matisse
+import com.zhihu.matisse.MimeType
+import com.zhihu.matisse.engine.impl.PicassoEngine
 import kotlinx.android.synthetic.main.compose_fragment.*
 import kotlinx.coroutines.experimental.launch
 import net.openid.appauth.AuthorizationService
@@ -47,7 +55,9 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     companion object {
         fun newInstance() = ComposeFragment()
-        const val BLOG_UPLOAD_REQUEST_CODE: Int = 123
+        const val PERMISSION_REQUEST_CODE: Int = 100
+        const val IMAGE_REQUEST_CODE: Int = 101
+        const val BLOG_UPLOAD_REQUEST_CODE: Int = 102
     }
 
     init {
@@ -86,7 +96,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     private fun constructBlogContent(): SpannableStringBuilder {
         if (blog.content == null) {
-            val stringBuilder = SpannableStringBuilder()
+            val stringBuilder = SpannableStringBuilder("skdvbshadvbcaksjdc")
             stringBuilder.setSpan(AbsoluteSizeSpan(Math.round(26 * 1.66f)), 0, 0, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
             return stringBuilder
         }
@@ -150,6 +160,24 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             val size = font_size.text.toString().toInt()
             text_editor.setFontSize(size + 1)
         }
+
+        image_insert.setOnClickListener {
+            openImagePicker()
+        }
+    }
+
+    private fun openImagePicker() {
+        if (ContextCompat.checkSelfPermission(context!!, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(activity!!, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), PERMISSION_REQUEST_CODE)
+            return
+        }
+        Matisse.from(this)
+                .choose(MimeType.ofAll())
+                .countable(true)
+                .maxSelectable(1)
+                .thumbnailScale(0.85f)
+                .imageEngine(PicassoEngine())
+                .forResult(IMAGE_REQUEST_CODE)
     }
 
     private fun setupToolbar() {
@@ -234,10 +262,31 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
         underline_button.colorFilter = null
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            PERMISSION_REQUEST_CODE -> {
+                if ((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                    openImagePicker()
+                } else {
+                    Toast.makeText(context!!, "Permission Denied", Toast.LENGTH_SHORT).show()
+                }
+                return
+            }
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == BLOG_UPLOAD_REQUEST_CODE) {
-            onBlogSelected(data?.getStringExtra(Constants.BLOG_ID)!!)
-            return
+        when (requestCode) {
+            BLOG_UPLOAD_REQUEST_CODE -> {
+                onBlogSelected(data?.getStringExtra(Constants.BLOG_ID)!!)
+            }
+            IMAGE_REQUEST_CODE -> {
+                if (requestCode == RESULT_OK) {
+                    val pathResult = Matisse.obtainResult(data)
+                    text_editor.setImage(pathResult[0])
+                }
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }

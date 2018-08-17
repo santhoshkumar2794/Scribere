@@ -39,6 +39,15 @@
                 android:orientation="horizontal">
 
                 <ImageButton
+                    android:id="@+id/image_insert"
+                    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                    android:layout_width="@dimen/tool_button_size"
+                    android:layout_height="@dimen/tool_button_size"
+                    android:layout_margin="@dimen/tool_button_margin"
+                    android:src="@drawable/ic_insert_photo_black_24dp" />
+
+
+                <ImageButton
                     android:id="@+id/bold_button"
                     style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                     android:layout_width="@dimen/tool_button_size"

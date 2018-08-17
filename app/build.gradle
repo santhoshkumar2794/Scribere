@@ -66,8 +66,14 @@ dependencies {
     implementation "androidx.paging:paging-runtime:$paging_version"
     testImplementation "androidx.paging:paging-common:$paging_version"
     //Gson
-    compile 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    //Blogger Services
     implementation 'com.google.apis:google-api-services-blogger:v3-rev59-1.23.0'
     implementation 'com.google.apis:google-api-services-oauth2:v1-rev143-1.23.0'
+    //Appauth
     implementation 'net.openid:appauth:0.2.0'
+    //Matisse
+    implementation 'com.zhihu.android:matisse:0.5.2-beta2'
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.5.1'
 }
