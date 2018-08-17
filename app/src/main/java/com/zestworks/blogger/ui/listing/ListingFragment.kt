@@ -10,17 +10,18 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.GridLayoutManager
-import com.zestworks.blogger.CreateBlogFragment
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.squareup.picasso.Picasso
 import com.zestworks.blogger.R
-import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.model.Blog
 import com.zestworks.blogger.ui.compose.ComposeActivity
-import com.zestworks.blogger.ui.compose.ComposeFragment
 import kotlinx.android.synthetic.main.listing_fragment.*
 
 class ListingFragment : Fragment() {
 
     private lateinit var listingAdapter: ListingAdapter
+    private var signedInAccount: GoogleSignInAccount? = null
 
     companion object {
         fun newInstance() = ListingFragment()
@@ -38,6 +39,7 @@ class ListingFragment : Fragment() {
         create_new.setOnClickListener {
             openCreateNew()
         }
+
     }
 
     private fun setupListing() {
@@ -61,11 +63,18 @@ class ListingFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        signedInAccount = GoogleSignIn.getLastSignedInAccount(context!!)
+
+        if (signedInAccount != null) {
+            Picasso.with(context!!).load(signedInAccount!!.photoUrl).into(profile_icon)
+        }
+
         viewModel = ViewModelProviders.of(this).get(BloggerViewModel::class.java)
 
         viewModel.getBlogList().observe(this, Observer {
             listingAdapter.submitList(it)
         })
+
     }
 
 

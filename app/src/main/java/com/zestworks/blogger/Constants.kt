@@ -6,6 +6,7 @@ object Constants {
     const val BLOG_ID = "BLOG_ID"
     const val BLOG_COLUMN_ID = "BLOG_ID"
     const val BLOG_TEMPLATE = "BLOG_TEMPLATE"
+    const val SIGN_IN_SKIP = "SIGN_IN_SKIP"
 
     const val COMPOSE_FRAGMENT = "COMPOSE_FRAGMENT"
 }

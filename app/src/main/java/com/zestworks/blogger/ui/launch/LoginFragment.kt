@@ -1,5 +1,6 @@
 package com.zestworks.blogger.ui.launch
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
+import com.zestworks.blogger.Constants
 import com.zestworks.blogger.R
 import com.zestworks.blogger.ui.listing.ListingFragment
 import kotlinx.android.synthetic.main.login_frgament.*
@@ -38,6 +40,11 @@ class LoginFragment : Fragment() {
         }
 
         skip_button.setOnClickListener {
+            val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE)
+            with(sharedPref!!.edit()) {
+                putBoolean(Constants.SIGN_IN_SKIP, true)
+                commit()
+            }
             launchListingFragment()
         }
     }

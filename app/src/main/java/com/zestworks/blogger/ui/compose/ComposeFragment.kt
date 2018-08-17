@@ -223,7 +223,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
     }
 
     override fun onDestroy() {
-        //viewModel.insertBlog(blog)
+        viewModel.insertBlog(blog)
         executorService.shutdown()
         super.onDestroy()
     }
