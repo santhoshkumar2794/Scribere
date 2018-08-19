@@ -3,6 +3,6 @@
     android:layout_width="@dimen/template__image_width"
     android:layout_height="@dimen/template_image_height"
     android:id="@+id/template_view"
-    android:layout_marginTop="@dimen/template_top_margin"
+    android:layout_margin="16dp"
     android:padding="2dp"
     android:background="@color/template_background"/>

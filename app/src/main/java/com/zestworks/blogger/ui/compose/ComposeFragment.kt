@@ -10,9 +10,12 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.AbsoluteSizeSpan
 import android.text.style.StyleSpan
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.text.HtmlCompat
@@ -34,6 +37,7 @@ import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.PicassoEngine
 import kotlinx.android.synthetic.main.compose_fragment.*
+import kotlinx.android.synthetic.main.compose_fragment.view.*
 import kotlinx.coroutines.experimental.launch
 import net.openid.appauth.AuthorizationService
 import java.util.concurrent.Executors
@@ -62,7 +66,6 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     init {
         retainInstance = true
-        setHasOptionsMenu(true)
     }
 
     override fun setArguments(args: Bundle?) {
@@ -96,8 +99,8 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     private fun constructBlogContent(): SpannableStringBuilder {
         if (blog.content == null) {
-            val stringBuilder = SpannableStringBuilder("skdvbshadvbcaksjdc")
-            stringBuilder.setSpan(AbsoluteSizeSpan(Math.round(26 * 1.66f)), 0, 0, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
+            val stringBuilder = SpannableStringBuilder()
+            stringBuilder.setSpan(AbsoluteSizeSpan(Math.round(26 * 1.66f)), 0, stringBuilder.length, Spanned.SPAN_INCLUSIVE_INCLUSIVE)
             return stringBuilder
         }
         val spanned = HtmlCompat.fromHtml(blog.content!!, HtmlCompat.FROM_HTML_MODE_LEGACY)
@@ -143,7 +146,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             }
         }
 
-        left_alignment.setOnClickListener {
+        /*left_alignment.setOnClickListener {
             if (!it.isSelected) {
                 text_editor.applyProps(Composer.PROPS.LEFT_ALIGNMENT)
             } else {
@@ -159,8 +162,9 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
         font_increase.setOnClickListener {
             val size = font_size.text.toString().toInt()
             text_editor.setFontSize(size + 1)
-        }
+        }*/
 
+        image_insert.isEnabled = false
         image_insert.setOnClickListener {
             openImagePicker()
         }
@@ -181,24 +185,18 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
     }
 
     private fun setupToolbar() {
-        activity!!.title = blog.title
-    }
+        (activity as? AppCompatActivity)?.setSupportActionBar(compose_toolbar)
+        compose_toolbar.blog_title.text = blog.title
 
-    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
-        inflater?.inflate(R.menu.composer_menu, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        return when (item?.itemId) {
-            R.id.publish -> {
-                publishInProgress = true
-
-                val intent = Intent(context!!, BlogSelectActivity::class.java)
-                intent.putExtra(Constants.BLOG_COLUMN_ID, blog.columnID)
-                startActivityForResult(intent, BLOG_UPLOAD_REQUEST_CODE)
-                true
+        compose_toolbar.share_blog.setOnClickListener {
+            if (publishInProgress) {
+                return@setOnClickListener
             }
-            else -> super.onOptionsItemSelected(item)
+            publishInProgress = true
+
+            val intent = Intent(context!!, BlogSelectActivity::class.java)
+            intent.putExtra(Constants.BLOG_COLUMN_ID, blog.columnID)
+            startActivityForResult(intent, BLOG_UPLOAD_REQUEST_CODE)
         }
     }
 
@@ -238,7 +236,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
         setToolState(italic_button, style.italics)
         setToolState(underline_button, style.underline)
         setToolState(strike_through_button, style.strikeThrough)
-        font_size.text = style.fontSize.toString()
+        //font_size.text = style.fontSize.toString()
     }
 
     private fun setToolState(icon: ImageButton, state: Boolean) {
@@ -296,8 +294,6 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
     }
 
     override fun onBlogSelected(blogID: String) {
-
-        blog_list_view.visibility = View.GONE
 
         authManager.getCurrent().performActionWithFreshTokens(authorizationService) { accessToken, idToken, ex ->
             val googleCredential = GoogleCredential()

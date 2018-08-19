@@ -1,6 +1,5 @@
 package com.zestworks.blogger
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -8,12 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.GridLayoutManager
-import com.zestworks.blogger.ui.compose.ComposeActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.zestworks.blogger.ui.compose.ComposeFragment
+import com.zestworks.blogger.ui.create_new.Template
 import com.zestworks.blogger.ui.create_new.TemplateChooser
 import com.zestworks.blogger.ui.create_new.TemplateSelector
-import com.zestworks.blogger.ui.create_new.Template
 import kotlinx.android.synthetic.free.create_blog_fragment.*
 
 class CreateBlogFragment : Fragment(), TemplateSelector {
@@ -32,7 +30,7 @@ class CreateBlogFragment : Fragment(), TemplateSelector {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        template_selector.layoutManager = GridLayoutManager(view.context, 2)
+        template_selector.layoutManager = LinearLayoutManager(view.context, LinearLayoutManager.HORIZONTAL, false)
 
         val templateIDs = arrayOf(Template.BLANK_TEMPLATE)
         templateChooser = TemplateChooser(templateIDs, this)

@@ -28,7 +28,6 @@
         <activity
             android:name=".ui.compose.ComposeActivity"
             android:launchMode="standard"
-            android:theme="@style/ComposerTheme"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
