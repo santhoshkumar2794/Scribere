@@ -4,7 +4,9 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -27,6 +29,8 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.blogger.Blogger
 import com.google.api.services.blogger.BloggerScopes
 import com.google.api.services.blogger.model.Post
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import com.zestworks.blogger.Constants
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
@@ -56,6 +60,21 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     private lateinit var authorizationService: AuthorizationService
     private lateinit var authManager: AuthManager
+
+    private var bitmap: Bitmap? = null
+    private var target = object : Target {
+        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+
+        }
+
+        override fun onBitmapFailed(errorDrawable: Drawable?) {
+
+        }
+
+        override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+            this@ComposeFragment.bitmap = bitmap
+        }
+    }
 
     companion object {
         fun newInstance() = ComposeFragment()
@@ -164,9 +183,9 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             text_editor.setFontSize(size + 1)
         }*/
 
-        image_insert.isEnabled = false
         image_insert.setOnClickListener {
-            openImagePicker()
+            Toast.makeText(context!!, "Coming Soon!!", Toast.LENGTH_SHORT).show()
+            //openImagePicker()
         }
     }
 
@@ -280,8 +299,11 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
                 onBlogSelected(data?.getStringExtra(Constants.BLOG_ID)!!)
             }
             IMAGE_REQUEST_CODE -> {
-                if (requestCode == RESULT_OK) {
+                if (resultCode == RESULT_OK) {
                     val pathResult = Matisse.obtainResult(data)
+                    Picasso.with(context!!)
+                            .load("content://media/external/images/media/289631")
+                            .into(target)
                     text_editor.setImage(pathResult[0])
                 }
             }
@@ -309,6 +331,11 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             val content = Post()
             content.title = blog.title
             content.content = blog.content
+
+            val images = Post.Images()
+            //images.url = "content://media/external/images/media/289631"
+            images.set("content://media/external/images/media/289631", bitmap)
+            content.images = arrayListOf(images)
 
             val postsInsertAction = blogger.build().posts().insert(blogID, content)
             postsInsertAction.fields = "id,blog,author/displayName,content,published,title,url"

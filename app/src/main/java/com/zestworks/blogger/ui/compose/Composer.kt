@@ -3,12 +3,10 @@ package com.zestworks.blogger.ui.compose
 import android.content.Context
 import android.graphics.Typeface
 import android.net.Uri
-import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.*
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatEditText
-import com.zestworks.blogger.R
 import com.zestworks.blogger.ui.SpanData
 import com.zestworks.blogger.ui.StyleData
 
@@ -96,8 +94,10 @@ class Composer(context: Context, attributeSet: AttributeSet) : AppCompatEditText
     }
 
     internal fun setImage(uri: Uri) {
-        text?.setSpan(ImageSpan(context!!, R.drawable.ic_format_align_right_black_24dp), 0, 1, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
-        text = SpannableStringBuilder(text)
+        if (selectionStart == selectionEnd) {
+            text?.replace(selectionStart, selectionEnd, " ")
+        }
+        text?.setSpan(ImageSpan(context!!, uri), selectionStart - 1, selectionEnd, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
     }
 
     internal fun removeProps(propType: PROPS) {
