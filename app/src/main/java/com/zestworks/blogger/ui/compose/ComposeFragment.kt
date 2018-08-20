@@ -2,11 +2,11 @@ package com.zestworks.blogger.ui.compose
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.Color
-import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.text.Spanned
@@ -17,6 +17,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.annotation.WorkerThread
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,12 +30,10 @@ import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.api.services.blogger.Blogger
 import com.google.api.services.blogger.BloggerScopes
 import com.google.api.services.blogger.model.Post
-import com.squareup.picasso.Picasso
-import com.squareup.picasso.Target
 import com.zestworks.blogger.Constants
 import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
-import com.zestworks.blogger.ui.blog_uploader.BlogSelectActivity
+import com.zestworks.blogger.ui.blog_uploader.BlogSelectionFragment
 import com.zestworks.blogger.ui.create_new.Template
 import com.zestworks.blogger.ui.listing.BloggerViewModel
 import com.zhihu.matisse.Matisse
@@ -43,7 +42,9 @@ import com.zhihu.matisse.engine.impl.PicassoEngine
 import kotlinx.android.synthetic.main.compose_fragment.*
 import kotlinx.android.synthetic.main.compose_fragment.view.*
 import kotlinx.coroutines.experimental.launch
+import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationService
+import net.openid.appauth.AuthorizationServiceConfiguration
 import java.util.concurrent.Executors
 
 
@@ -53,28 +54,14 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
 
     private lateinit var viewModel: BloggerViewModel
     private lateinit var template: Template
-    private var executorService = Executors.newSingleThreadExecutor()
-    private val blog = com.zestworks.blogger.model.Blog()
 
+    private val blog = com.zestworks.blogger.model.Blog()
     private var publishInProgress: Boolean = false
+
+    private var executorService = Executors.newSingleThreadExecutor()
 
     private lateinit var authorizationService: AuthorizationService
     private lateinit var authManager: AuthManager
-
-    private var bitmap: Bitmap? = null
-    private var target = object : Target {
-        override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-
-        }
-
-        override fun onBitmapFailed(errorDrawable: Drawable?) {
-
-        }
-
-        override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-            this@ComposeFragment.bitmap = bitmap
-        }
-    }
 
     companion object {
         fun newInstance() = ComposeFragment()
@@ -211,11 +198,13 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             if (publishInProgress) {
                 return@setOnClickListener
             }
-            publishInProgress = true
+            //publishInProgress = true
 
-            val intent = Intent(context!!, BlogSelectActivity::class.java)
-            intent.putExtra(Constants.BLOG_COLUMN_ID, blog.columnID)
-            startActivityForResult(intent, BLOG_UPLOAD_REQUEST_CODE)
+            if (!authManager.getCurrent().isAuthorized) {
+                executorService.submit(this::performAuthRequest)
+                return@setOnClickListener
+            }
+            showBlogSelectionFragment()
         }
     }
 
@@ -293,6 +282,25 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
         }
     }
 
+
+    @WorkerThread
+    private fun performAuthRequest() {
+        val serviceConfiguration = AuthorizationServiceConfiguration(
+                Uri.parse("https://accounts.google.com/o/oauth2/v2/auth") /* auth endpoint */,
+                Uri.parse("https://www.googleapis.com/oauth2/v4/token") /* token endpoint */
+        )
+
+        val builder = AuthorizationRequest.Builder(serviceConfiguration, AuthManager.clientID, AuthorizationRequest.RESPONSE_TYPE_CODE, Uri.parse(AuthManager.reDirectUriPath))
+        builder.setScope("https://www.googleapis.com/auth/blogger")
+
+        val authorizationRequest = builder.build()
+        authManager.replace(authorizationRequest)
+
+        val postAuthorizationIntent = Intent(AuthManager.action)
+        val pendingIntent = PendingIntent.getActivity(context, authorizationRequest.hashCode(), postAuthorizationIntent, 0)
+        authorizationService.performAuthorizationRequest(authorizationRequest, pendingIntent)
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
             BLOG_UPLOAD_REQUEST_CODE -> {
@@ -301,9 +309,6 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             IMAGE_REQUEST_CODE -> {
                 if (resultCode == RESULT_OK) {
                     val pathResult = Matisse.obtainResult(data)
-                    Picasso.with(context!!)
-                            .load("content://media/external/images/media/289631")
-                            .into(target)
                     text_editor.setImage(pathResult[0])
                 }
             }
@@ -316,6 +321,9 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
     }
 
     override fun onBlogSelected(blogID: String) {
+
+        val blogSelectionFragment = activity!!.supportFragmentManager.findFragmentByTag("BLOG_SELECTION_FRAGMENT") as? BlogSelectionFragment
+        blogSelectionFragment?.dismiss()
 
         authManager.getCurrent().performActionWithFreshTokens(authorizationService) { accessToken, idToken, ex ->
             val googleCredential = GoogleCredential()
@@ -331,11 +339,6 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             val content = Post()
             content.title = blog.title
             content.content = blog.content
-
-            val images = Post.Images()
-            //images.url = "content://media/external/images/media/289631"
-            images.set("content://media/external/images/media/289631", bitmap)
-            content.images = arrayListOf(images)
 
             val postsInsertAction = blogger.build().posts().insert(blogID, content)
             postsInsertAction.fields = "id,blog,author/displayName,content,published,title,url"
@@ -353,6 +356,12 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
                 }
             }
         }
+    }
+
+    fun showBlogSelectionFragment() {
+        val blogSelectionFragment = BlogSelectionFragment.newInstance()
+        blogSelectionFragment.blogListCallback = this
+        blogSelectionFragment.show(activity!!.supportFragmentManager, "BLOG_SELECTION_FRAGMENT")
     }
 
 }

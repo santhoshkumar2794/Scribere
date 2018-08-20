@@ -22,21 +22,18 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
 
         <activity
             android:name=".ui.compose.ComposeActivity"
-            android:launchMode="standard"
-            android:windowSoftInputMode="adjustResize" />
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize">
 
-        <activity
-            android:name=".ui.blog_uploader.BlogSelectActivity"
-            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="com.zestworks.blogger.HANDLE_AUTHORIZATION_RESPONSE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
+
         </activity>
 
         <activity android:name="net.openid.appauth.RedirectUriReceiverActivity">
