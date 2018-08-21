@@ -201,7 +201,8 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             //publishInProgress = true
 
             if (!authManager.getCurrent().isAuthorized) {
-                executorService.submit(this::performAuthRequest)
+                executorService.execute(this::performAuthRequest)
+                //executorService.submit(this::performAuthRequest)
                 return@setOnClickListener
             }
             showBlogSelectionFragment()
@@ -211,8 +212,6 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(BloggerViewModel::class.java)
-        authManager = AuthManager.getInstance(context!!)
-        authorizationService = AuthorizationService(context!!)
     }
 
     override fun onStart() {
@@ -220,6 +219,8 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
         if (executorService.isShutdown) {
             executorService = Executors.newSingleThreadExecutor()
         }
+        authManager = AuthManager.getInstance(context!!)
+        authorizationService = AuthorizationService(context!!)
     }
 
     override fun onStop() {
