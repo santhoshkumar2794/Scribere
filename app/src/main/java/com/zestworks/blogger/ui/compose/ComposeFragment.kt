@@ -41,7 +41,8 @@ import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.PicassoEngine
 import kotlinx.android.synthetic.main.compose_fragment.*
 import kotlinx.android.synthetic.main.compose_fragment.view.*
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationRequest
 import net.openid.appauth.AuthorizationService
 import net.openid.appauth.AuthorizationServiceConfiguration
@@ -346,7 +347,7 @@ class ComposeFragment : Fragment(), ComposerCallback, BlogListCallback {
             postsInsertAction.isDraft = true
 
             Toast.makeText(context, getString(R.string.publishing_the_blog), Toast.LENGTH_SHORT).show()
-            launch {
+            GlobalScope.launch {
                 val post = postsInsertAction.execute()
 
                 blog.blogID = post.blog.id

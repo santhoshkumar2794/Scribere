@@ -20,7 +20,8 @@ import com.zestworks.blogger.R
 import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.ui.compose.BlogListCallback
 import kotlinx.android.synthetic.main.blog_select_activity.*
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.openid.appauth.*
 import java.util.concurrent.Executors
 
@@ -134,7 +135,7 @@ class BlogSelectActivity : AppCompatActivity(), BlogListCallback {
             blogger.applicationName = "Blogger-PostsInsert-Snippet/1.0"
 
 
-            launch {
+            GlobalScope.launch {
                 val listByUser = blogger.build().blogs().listByUser("self")
                 val blogList = listByUser.execute()
                 runOnUiThread {

@@ -5,7 +5,8 @@ import androidx.paging.LivePagedListBuilder
 import androidx.paging.PagedList
 import com.zestworks.blogger.DBHelper
 import com.zestworks.blogger.model.Blog
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class BlogRepository : Repository {
 
@@ -20,7 +21,7 @@ class BlogRepository : Repository {
     }
 
     override fun insertBlog(blog: Blog) {
-        launch {
+        GlobalScope.launch {
             DBHelper.blogDatabase.blogDao().insert(blog)
         }.start()
     }

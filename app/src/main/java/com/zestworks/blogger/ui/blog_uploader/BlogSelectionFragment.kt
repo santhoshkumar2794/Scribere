@@ -18,7 +18,8 @@ import com.zestworks.blogger.auth.AuthManager
 import com.zestworks.blogger.ui.compose.BlogListCallback
 import kotlinx.android.synthetic.main.blog_selection_fragment.*
 import kotlinx.android.synthetic.main.blog_selection_fragment.view.*
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import net.openid.appauth.AuthorizationService
 
 class BlogSelectionFragment : BottomSheetDialogFragment() {
@@ -62,7 +63,7 @@ class BlogSelectionFragment : BottomSheetDialogFragment() {
             blogger.applicationName = "Blogger-PostsInsert-Snippet/1.0"
 
 
-            launch {
+            GlobalScope.launch {
                 val listByUser = blogger.build().blogs().listByUser("self")
                 val blogList = listByUser.execute()
 
